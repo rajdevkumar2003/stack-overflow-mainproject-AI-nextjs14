@@ -1,5 +1,5 @@
 {
-  "name": "devoverflow",
+  "name": "devflow",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.27.5",
     "@tailwindcss/typography": "^0.5.10",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
