@@ -3,8 +3,8 @@ import { authMiddleware } from "@clerk/nextjs";
 export default authMiddleware({
   publicRoutes: [
     '/',
-    '/api/webhooks(.*)',
-    'question/:id',
+    '/api/webhooks',
+    '/question/:id',
     '/tags',
     '/tags/:id',
     '/profile/:id',
@@ -12,7 +12,7 @@ export default authMiddleware({
     '/jobs'
   ],
   ignoredRoutes: [
-    '/api/webhook(.*)', '/api/chatgpt'
+    '/api/webhooks', '/api/chatgpt'
   ]
 });
  
