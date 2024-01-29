@@ -3,9 +3,11 @@
 import Question from "@/database/question.model";
 import Tag from "@/database/tag.model";
 import { connectToDatabase } from "../mongoose"
-import {  CreateQuestionParams, GetQuestionByIdParams, GetQuestionsParams, QuestionVoteParams } from "./shared.types";
+import {  CreateQuestionParams, DeleteQuestionParams, EditQuestionParams, GetQuestionByIdParams, GetQuestionsParams, QuestionVoteParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
 import User from "@/database/user.model";
+import Answer from "@/database/answer.model";
+import Interaction from "@/database/interaction.model";
 
 export async function getQuestions(params: GetQuestionsParams){
     connectToDatabase();
@@ -40,7 +42,7 @@ export async function createQuestion(params: CreateQuestionParams){
          for (const tag of tags){
             const existingTag= await Tag.findOneAndUpdate(
                 {name: { $regex: new RegExp(`^${tag}$`, "i")}},
-                { $setOnInsert: { name: tag}, $push: {question: question._id}},
+                { $setOnInsert: { name: tag}, $push: {questions: question._id}},
                 {upsert: true, new: true}
             );
 
@@ -140,4 +142,44 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
       console.log(error);
       throw error;
     }
+}
+
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, path } = params;
+
+    await Question.deleteOne({ _id: questionId });
+    await Answer.deleteMany({ question: questionId });
+    await Interaction.deleteMany({ question: questionId });
+    await Tag.updateMany({ questions: questionId }, { $pull: { questions: questionId }});
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function editQuestion(params: EditQuestionParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, title, content, path } = params;
+
+    const question = await Question.findById(questionId).populate("tags");
+
+    if(!question) {
+      throw new Error("Question not found");
+    }
+
+    question.title = title;
+    question.content = content;
+
+    await question.save();
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
 }

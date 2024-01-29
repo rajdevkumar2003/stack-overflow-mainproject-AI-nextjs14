@@ -3,28 +3,9 @@ import React from "react";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
 import { formatAndDivideNumber, getTimestamp } from "@/lib/utils";
+import { SignedIn } from "@clerk/nextjs";
+import EditDeleteAction from "../shared/EditDeleteAction";
 
-// interface QuestionProps {
-//   _id: string;
-//   title: string;
-//   questionToTags: {
-//     questionId: string;
-//     tagId: string;
-//     tag: {
-//       id: string;
-//       name: string;
-//     };
-//   }[];
-//   author: {
-//     id: string;
-//     name: string;
-//     avatar: string;
-//   };
-//   upvotes: number;
-//   views: number;
-//   answers: Array<object>;
-//   createdAt: Date;
-// }
 
 interface QuestionProps {
   _id: string;
@@ -34,6 +15,7 @@ interface QuestionProps {
     name: string;
   }[];
   author: {
+    clerkId: string;
     _id: string;
     name: string;
     picture: string;
@@ -42,9 +24,11 @@ interface QuestionProps {
   views: number;
   answers: Array<object>;
   createdAt: Date;
+  clerkId?: string;
 }
 
 const QuestionCard = ({
+  clerkId,
   _id,
   title,
   tags,
@@ -52,8 +36,11 @@ const QuestionCard = ({
   upvotes,
   views,
   answers,
-  createdAt,
+  createdAt
 }: QuestionProps) => {
+  
+  const showActionButtons = clerkId && clerkId === author.clerkId;
+  
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -69,7 +56,14 @@ const QuestionCard = ({
           </Link>
         </div>
 
-        {/* If signed in add edit delete actions */}
+        <SignedIn>
+          {showActionButtons&&(
+            <EditDeleteAction
+              type="Question"
+              itemId={JSON.stringify(_id)}
+            />
+          )}
+        </SignedIn>
       </div>
 
       <div className="mt-3.5 flex flex-wrap gap-2">
