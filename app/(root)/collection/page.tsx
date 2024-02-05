@@ -26,7 +26,7 @@ export default async function Home({ searchParams }: SearchParamsProps) {
 
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearchbar 
-          route="/"
+          route="/collection"
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
           placeholder="Search for questions"
@@ -48,7 +48,7 @@ export default async function Home({ searchParams }: SearchParamsProps) {
               title={question.title}
               tags={question.tags}
               author={question.author}
-              upvotes={question.upvotes}
+              upvotes={question.upvotes.length}
               views={question.views}
               answers={question.answers}
               createdAt={question.createdAt}

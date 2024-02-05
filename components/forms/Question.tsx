@@ -35,16 +35,16 @@ const Question = ({ type, mongoUserId, questionDetails }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const parsedQuestionDetails =questionDetails? JSON.parse(questionDetails):"";
+  const parsedQuestionDetails = questionDetails && JSON.parse(questionDetails);
 
-  const groupedTags = questionDetails?parsedQuestionDetails.tags.map((tag:any) => tag.name):[];
+  const groupedTags = questionDetails && parsedQuestionDetails?.tags.map((tag:any) => tag.name);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
     defaultValues: {
-      title: parsedQuestionDetails.title || '',
-      explanation: parsedQuestionDetails.content || '',
+      title: parsedQuestionDetails?.title || '',
+      explanation: parsedQuestionDetails?.content || '',
       tags: groupedTags || []
     },
   })
@@ -56,13 +56,13 @@ const Question = ({ type, mongoUserId, questionDetails }: Props) => {
     try {
       if(type === 'Edit') {
         await editQuestion({
-          questionId: parsedQuestionDetails._id,
+          questionId: parsedQuestionDetails?._id,
           title: values.title,
           content: values.explanation,
           path: pathname,
         })
 
-        router.push(`/question/${parsedQuestionDetails._id}`);
+        router.push(`/question/${parsedQuestionDetails?._id}`);
       } else {
         await createQuestion({
           title: values.title,
@@ -150,7 +150,7 @@ const Question = ({ type, mongoUserId, questionDetails }: Props) => {
                 }}
                 onBlur={field.onBlur}
                 onEditorChange={(content) => field.onChange(content)}
-                initialValue={parsedQuestionDetails.content || ''}
+                initialValue={parsedQuestionDetails?.content || ''}
                 init={{
                   height: 350,
                   menubar: false,
